@@ -1,0 +1,118 @@
+{
+  "address": "Dash3ZZKehWHGNvbCpkde6gvJTR2io7YZCt5DyU73PuJ",
+  "metadata": {
+    "name": "flipdash_router",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Solana program that wraps the Flipcash bonding curve and the USDF<->USDC bridge into single user-signed instructions, with a fixed 0.85% integrator fee in USDF.",
+    "repository": "https://github.com/HuntlerX/flipdash-router"
+  },
+  "instructions": [
+    {
+      "name": "buy_tokens",
+      "discriminator": [1],
+      "accounts": [
+        {"name": "user", "writable": true, "signer": true},
+        {"name": "fee_usdf_ata", "writable": true},
+        {"name": "user_usdf_ata", "writable": true},
+        {"name": "user_target_ata", "writable": true},
+        {"name": "usdf_mint"},
+        {"name": "target_mint"},
+        {"name": "flipcash_pool"},
+        {"name": "flipcash_target_vault", "writable": true},
+        {"name": "flipcash_usdf_vault", "writable": true},
+        {"name": "flipcash_program"},
+        {"name": "token_program"}
+      ],
+      "args": [
+        {"name": "in_amount", "type": "u64"},
+        {"name": "min_amount_out", "type": "u64"}
+      ]
+    },
+    {
+      "name": "buy_tokens_via_bridge",
+      "discriminator": [2],
+      "accounts": [
+        {"name": "user", "writable": true, "signer": true},
+        {"name": "fee_usdf_ata", "writable": true},
+        {"name": "user_usdc_ata", "writable": true},
+        {"name": "user_usdf_ata", "writable": true},
+        {"name": "user_target_ata", "writable": true},
+        {"name": "usdc_mint"},
+        {"name": "usdf_mint"},
+        {"name": "target_mint"},
+        {"name": "bridge_pool"},
+        {"name": "bridge_usdf_vault", "writable": true},
+        {"name": "bridge_usdc_vault", "writable": true},
+        {"name": "flipcash_pool"},
+        {"name": "flipcash_target_vault", "writable": true},
+        {"name": "flipcash_usdf_vault", "writable": true},
+        {"name": "usdf_swap_program"},
+        {"name": "flipcash_program"},
+        {"name": "token_program"}
+      ],
+      "args": [
+        {"name": "in_amount", "type": "u64"},
+        {"name": "min_amount_out", "type": "u64"}
+      ]
+    },
+    {
+      "name": "sell_tokens",
+      "discriminator": [3],
+      "accounts": [
+        {"name": "user", "writable": true, "signer": true},
+        {"name": "fee_usdf_ata", "writable": true},
+        {"name": "user_target_ata", "writable": true},
+        {"name": "user_usdf_ata", "writable": true},
+        {"name": "usdf_mint"},
+        {"name": "target_mint"},
+        {"name": "flipcash_pool", "writable": true},
+        {"name": "flipcash_target_vault", "writable": true},
+        {"name": "flipcash_usdf_vault", "writable": true},
+        {"name": "flipcash_program"},
+        {"name": "token_program"}
+      ],
+      "args": [
+        {"name": "in_amount", "type": "u64"},
+        {"name": "min_amount_out", "type": "u64"}
+      ]
+    },
+    {
+      "name": "sell_tokens_via_bridge",
+      "discriminator": [4],
+      "accounts": [
+        {"name": "user", "writable": true, "signer": true},
+        {"name": "fee_usdf_ata", "writable": true},
+        {"name": "user_target_ata", "writable": true},
+        {"name": "user_usdf_ata", "writable": true},
+        {"name": "user_usdc_ata", "writable": true},
+        {"name": "usdf_mint"},
+        {"name": "usdc_mint"},
+        {"name": "target_mint"},
+        {"name": "flipcash_pool", "writable": true},
+        {"name": "flipcash_target_vault", "writable": true},
+        {"name": "flipcash_usdf_vault", "writable": true},
+        {"name": "bridge_pool"},
+        {"name": "bridge_usdf_vault", "writable": true},
+        {"name": "bridge_usdc_vault", "writable": true},
+        {"name": "flipcash_program"},
+        {"name": "usdf_swap_program"},
+        {"name": "token_program"}
+      ],
+      "args": [
+        {"name": "in_amount", "type": "u64"},
+        {"name": "min_amount_out", "type": "u64"}
+      ]
+    }
+  ],
+  "errors": [
+    {"code": 0, "name": "Overflow", "msg": "Arithmetic overflow"},
+    {"code": 1, "name": "InvalidMint", "msg": "Provided mint pubkey doesn't match the pinned mint"},
+    {"code": 2, "name": "InvalidFeeAccount", "msg": "fee_usdf_ata does not match the canonical FEE_USDF_ATA pin"},
+    {"code": 3, "name": "InvalidProgram", "msg": "CPI-target program account did not match the expected program ID"},
+    {"code": 4, "name": "SlippageExceeded", "msg": "User received less than min_amount_out on the destination ATA"},
+    {"code": 5, "name": "NoCurveOutput", "msg": "Bridge or curve CPI delivered zero output"},
+    {"code": 6, "name": "ZeroAmount", "msg": "in_amount must be > 0"},
+    {"code": 7, "name": "InvalidBridgePool", "msg": "Bridge pool/vault accounts do not match the canonical USDF<->USDC bridge"}
+  ]
+}
