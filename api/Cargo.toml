@@ -1,0 +1,17 @@
+[package]
+name = "flipdash-router-api"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+readme.workspace = true
+
+[dependencies]
+solana-program.workspace = true
+bytemuck.workspace = true
+steel.workspace = true
+num_enum.workspace = true
+spl-token.workspace = true

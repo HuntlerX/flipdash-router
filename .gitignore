@@ -1,0 +1,61 @@
+# Build artifacts — Cargo writes everything here. Includes the deploy
+# keypair (target/deploy/flipdash_router-keypair.json) which is copied
+# from the vault during build, so we cover that too.
+/target/
+
+# Defense-in-depth: any keypair-shaped JSON files at the top level or in
+# common locations we might accidentally drop one in. The vault is at
+# $HOME/.config/flipdash/keys/ — entirely outside this repo. Nothing
+# here should ever end with `-keypair.json`, match a vault-style filename,
+# or live in a `vanity/` / `keys/` / `wallets/` dir.
+*-keypair.json
+*-key.json
+program-keypair.json
+mainnet-program-keypair.json
+
+# Vault-style filenames (see Makefile KEY_VAULT entries). Belt-and-suspenders
+# in case one is ever accidentally copied into the repo.
+*-program.json
+*-program-vanity.json
+*-router-owner.json
+*-router-owner-vanity.json
+*-fee-receiver*.json
+*-trader*.json
+
+/vanity/
+/keys/
+/wallets/
+
+# Scratch / test scaffolding that's regenerable.
+/quote_drift_test/
+
+# Anything mentioning the env directly. We don't keep .env in this
+# repo — it lives on the indexer host, not here — but be safe.
+.env
+.env.*
+!.env.example
+
+# Internal docs (audit reports, deployment runbook). These contain
+# operational details (wallet pubkeys, deploy procedures, test tx
+# hashes) we keep internal rather than publishing alongside the source.
+/docs/
+
+# Integration tests + their fixtures. Kept local; published surface is
+# program source only. The tests have local-path dev-deps to sibling
+# repos (flipcash-program/, usdf-swap-program/) that wouldn't resolve
+# in a publish-clone scenario anyway.
+/program/tests/
+
+# Editor / OS / agent scratch files
+.DS_Store
+.idea/
+.vscode/
+.codex
+*.swp
+*~
+
+# Prevent accidental commit of cached test predictions or other large
+# binary artifacts. corpus.json under program/tests/ is intentionally
+# committed (it's a small reproducible fixture); curve_tables.bin is
+# 6.7 MB and regenerable, so don't commit it.
+**/curve_tables.bin

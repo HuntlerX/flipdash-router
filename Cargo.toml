@@ -1,0 +1,35 @@
+[workspace]
+members = ["api", "program"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+homepage = "https://flipdash.cash"
+description = "Solana program that wraps the Flipcash bonding curve and the USDF↔USDC bridge into single user-signed instructions, with a fixed 0.85% integrator fee in USDF."
+repository = "https://github.com/HuntlerX/flipdash-router"
+readme = "./README.md"
+keywords = ["solana", "flipcash", "router"]
+
+[workspace.dependencies]
+flipdash-router-api = { version = "0.1.0", path = "./api" }
+
+bytemuck = "1.14.3"
+bytemuck_derive = ">=1.8.1, <1.9.0"
+num_enum = "0.7"
+solana-program = "=2.1"
+solana-sdk = "=2.1"
+spl-associated-token-account = { features = ["no-entrypoint"], version = "^6" }
+spl-token = { features = ["no-entrypoint"], version = "^4" }
+steel = { version = "4.0.0", features = ["spl"] }
+solana-security-txt = "1.1.2"
+
+# build-sbf rustc-1.79 pin
+half = "=2.4.1"
+
+[profile.release]
+overflow-checks = true
+
+[profile.dev]
+overflow-checks = true

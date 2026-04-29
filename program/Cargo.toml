@@ -1,0 +1,36 @@
+[package]
+name = "flipdash-router-program"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "flipdash_router"
+
+[features]
+default = []
+no-entrypoint = []
+
+[dependencies]
+flipdash-router-api.workspace = true
+solana-program.workspace = true
+steel.workspace = true
+spl-token.workspace = true
+spl-associated-token-account.workspace = true
+bytemuck.workspace = true
+solana-security-txt.workspace = true
+
+bytemuck_derive=">=1.8.1, <1.9.0"
+half = "=2.4.1"
+
+# Integration tests (under program/tests/) are kept private and depend
+# on sibling repos. They are not part of the public release; if you want
+# to run them locally, clone `code-payments/flipcash-program` and
+# `code-payments/usdf-swap-program` as siblings and re-add the relevant
+# dev-dependencies here.
