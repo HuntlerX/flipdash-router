@@ -12,12 +12,17 @@ pub enum InstructionType {
     SellTokensIx = 3,
     /// flipcash currency in → USDF → bridge → USDC out. Fee in USDF.
     SellTokensViaBridgeIx = 4,
+    /// flipcash currency A in → USDF (curve sell) → flipcash currency B out
+    /// (curve buy). Single 0.85% fee taken in USDF on the intermediate gross
+    /// (vs the 1.7% the user would pay doing the two trades manually).
+    CurrencyToCurrencyIx = 5,
 }
 
 instruction!(InstructionType, BuyTokensIx);
 instruction!(InstructionType, BuyTokensViaBridgeIx);
 instruction!(InstructionType, SellTokensIx);
 instruction!(InstructionType, SellTokensViaBridgeIx);
+instruction!(InstructionType, CurrencyToCurrencyIx);
 
 // All four ixs share the same wire layout: total in_amount + slippage min.
 //
@@ -68,6 +73,18 @@ pub struct SellTokensViaBridgeIx {
     pub min_amount_out: [u8; 8],
 }
 
+// Currency↔currency uses the same wire layout. `in_amount` is currency-A
+// quarks the user is selling. `min_amount_out` is the worst-case
+// currency-B quarks the user must end up with (snapshot delta on the
+// dst ATA, i.e. covers the curve-sell-fee + router-fee + curve-buy
+// slippage in one number — what the UI shows).
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct CurrencyToCurrencyIx {
+    pub in_amount: [u8; 8],
+    pub min_amount_out: [u8; 8],
+}
+
 macro_rules! impl_swap_args {
     ($t:ty) => {
         impl $t {
@@ -91,3 +108,4 @@ impl_swap_args!(BuyTokensIx);
 impl_swap_args!(BuyTokensViaBridgeIx);
 impl_swap_args!(SellTokensIx);
 impl_swap_args!(SellTokensViaBridgeIx);
+impl_swap_args!(CurrencyToCurrencyIx);

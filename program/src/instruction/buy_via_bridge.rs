@@ -43,6 +43,12 @@ pub fn process_buy_tokens_via_bridge(accounts: &[AccountInfo], data: &[u8]) -> P
     check_signer(user_info)?;
     check_program(token_program_info, &spl_token::id())?;
 
+    if *flipcash_program_info.key != FLIPCASH_PROGRAM
+        || *usdf_swap_program_info.key != USDF_SWAP_PROGRAM
+    {
+        return Err(FlipdashRouterError::InvalidProgram.into());
+    }
+
     if *usdc_mint_info.key != USDC_MINT
         || *usdf_mint_info.key != USDF_MINT
         || *target_mint_info.key == USDF_MINT

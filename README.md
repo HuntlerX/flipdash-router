@@ -12,6 +12,7 @@ The router is intentionally minimal: no admin functions, no PDA-owned funds, no 
 | 2  | `BuyTokensViaBridgeIx`     | USDC → bridge → USDF → flipcash currency            |
 | 3  | `SellTokensIx`             | flipcash currency → USDF                            |
 | 4  | `SellTokensViaBridgeIx`    | flipcash currency → USDF → bridge → USDC            |
+| 5  | `CurrencyToCurrencyIx`     | flipcash A → USDF → flipcash B (single 0.85% fee)   |
 
 Each instruction takes the same 16-byte argument: `(in_amount: u64, min_amount_out: u64)`, both little-endian.
 
@@ -39,7 +40,7 @@ The on-chain bytecode for the mainnet program is reproducible from this reposito
 ```bash
 git clone https://github.com/HuntlerX/flipdash-router
 cd flipdash-router
-git checkout v0.1.0     # tag of the deployed build
+git checkout v0.2.0     # tag of the deployed build
 make build-mainnet
 
 solana program dump -u mainnet-beta \

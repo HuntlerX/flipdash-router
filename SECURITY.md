@@ -62,7 +62,7 @@ The on-chain program at `Dash3ZZKehWHGNvbCpkde6gvJTR2io7YZCt5DyU73PuJ` is reprod
 ```bash
 git clone https://github.com/HuntlerX/flipdash-router
 cd flipdash-router
-git checkout v0.1.0     # tag of the deployed build
+git checkout v0.2.0     # tag of the deployed build
 make build-mainnet
 
 solana program dump -u mainnet-beta \

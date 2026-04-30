@@ -41,6 +41,10 @@ pub fn process_sell_tokens(accounts: &[AccountInfo], data: &[u8]) -> ProgramResu
     check_signer(user_info)?;
     check_program(token_program_info, &spl_token::id())?;
 
+    if *flipcash_program_info.key != FLIPCASH_PROGRAM {
+        return Err(FlipdashRouterError::InvalidProgram.into());
+    }
+
     if *usdf_mint_info.key != USDF_MINT {
         return Err(FlipdashRouterError::InvalidMint.into());
     }

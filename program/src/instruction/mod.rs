@@ -1,10 +1,12 @@
 pub mod buy;
 pub mod buy_via_bridge;
+pub mod currency_to_currency;
 pub mod sell;
 pub mod sell_via_bridge;
 
 pub use buy::*;
 pub use buy_via_bridge::*;
+pub use currency_to_currency::*;
 pub use sell::*;
 pub use sell_via_bridge::*;
 
