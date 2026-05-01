@@ -183,6 +183,112 @@ pub fn build_currency_to_currency_ix(
     }
 }
 
+/// Build a `BuyTokensViaCoinbaseIx` — same shape as
+/// `BuyTokensViaBridgeIx` but routes USDC→USDF through the Coinbase
+/// ocp-server stable swapper.
+#[allow(clippy::too_many_arguments)]
+pub fn build_buy_tokens_via_coinbase_ix(
+    user: Pubkey,
+    fee_usdf_ata: Pubkey,
+    user_usdc_ata: Pubkey,
+    user_usdf_ata: Pubkey,
+    user_target_ata: Pubkey,
+    target_mint: Pubkey,
+    flipcash_pool: Pubkey,
+    flipcash_target_vault: Pubkey,
+    flipcash_usdf_vault: Pubkey,
+    in_amount: u64,
+    min_amount_out: u64,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(user, true),
+            AccountMeta::new(fee_usdf_ata, false),
+            AccountMeta::new(user_usdc_ata, false),
+            AccountMeta::new(user_usdf_ata, false),
+            AccountMeta::new(user_target_ata, false),
+            AccountMeta::new_readonly(USDC_MINT, false),
+            AccountMeta::new_readonly(USDF_MINT, false),
+            AccountMeta::new_readonly(target_mint, false),
+            AccountMeta::new_readonly(COINBASE_POOL, false),
+            AccountMeta::new_readonly(COINBASE_USDC_VAULT, false),
+            AccountMeta::new(COINBASE_USDC_VAULT_ACCT, false),
+            AccountMeta::new_readonly(COINBASE_USDF_VAULT, false),
+            AccountMeta::new(COINBASE_USDF_VAULT_ACCT, false),
+            AccountMeta::new_readonly(COINBASE_FEE_RECIPIENT, false),
+            AccountMeta::new(COINBASE_FEE_RECIP_USDC_ATA, false),
+            AccountMeta::new_readonly(COINBASE_WHITELIST, false),
+            AccountMeta::new_readonly(flipcash_pool, false),
+            AccountMeta::new(flipcash_target_vault, false),
+            AccountMeta::new(flipcash_usdf_vault, false),
+            AccountMeta::new_readonly(COINBASE_PROGRAM, false),
+            AccountMeta::new_readonly(FLIPCASH_PROGRAM, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+            AccountMeta::new_readonly(ATA_PROGRAM, false),
+            AccountMeta::new_readonly(solana_program::system_program::ID, false),
+        ],
+        data: BuyTokensViaCoinbaseIx::from_struct(ParsedSwapArgs {
+            in_amount,
+            min_amount_out,
+        })
+        .to_bytes(),
+    }
+}
+
+/// Build a `SellTokensViaCoinbaseIx` — same shape as
+/// `SellTokensViaBridgeIx` but routes USDF→USDC through the Coinbase
+/// ocp-server stable swapper.
+#[allow(clippy::too_many_arguments)]
+pub fn build_sell_tokens_via_coinbase_ix(
+    user: Pubkey,
+    fee_usdf_ata: Pubkey,
+    user_target_ata: Pubkey,
+    user_usdf_ata: Pubkey,
+    user_usdc_ata: Pubkey,
+    target_mint: Pubkey,
+    flipcash_pool: Pubkey,
+    flipcash_target_vault: Pubkey,
+    flipcash_usdf_vault: Pubkey,
+    in_amount: u64,
+    min_amount_out: u64,
+) -> Instruction {
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(user, true),
+            AccountMeta::new(fee_usdf_ata, false),
+            AccountMeta::new(user_target_ata, false),
+            AccountMeta::new(user_usdf_ata, false),
+            AccountMeta::new(user_usdc_ata, false),
+            AccountMeta::new_readonly(USDF_MINT, false),
+            AccountMeta::new_readonly(USDC_MINT, false),
+            AccountMeta::new_readonly(target_mint, false),
+            AccountMeta::new(flipcash_pool, false), // mut on sell
+            AccountMeta::new(flipcash_target_vault, false),
+            AccountMeta::new(flipcash_usdf_vault, false),
+            AccountMeta::new_readonly(COINBASE_POOL, false),
+            AccountMeta::new_readonly(COINBASE_USDF_VAULT, false),
+            AccountMeta::new(COINBASE_USDF_VAULT_ACCT, false),
+            AccountMeta::new_readonly(COINBASE_USDC_VAULT, false),
+            AccountMeta::new(COINBASE_USDC_VAULT_ACCT, false),
+            AccountMeta::new_readonly(COINBASE_FEE_RECIPIENT, false),
+            AccountMeta::new(COINBASE_FEE_RECIP_USDF_ATA, false),
+            AccountMeta::new_readonly(COINBASE_WHITELIST, false),
+            AccountMeta::new_readonly(FLIPCASH_PROGRAM, false),
+            AccountMeta::new_readonly(COINBASE_PROGRAM, false),
+            AccountMeta::new_readonly(spl_token::id(), false),
+            AccountMeta::new_readonly(ATA_PROGRAM, false),
+            AccountMeta::new_readonly(solana_program::system_program::ID, false),
+        ],
+        data: SellTokensViaCoinbaseIx::from_struct(ParsedSwapArgs {
+            in_amount,
+            min_amount_out,
+        })
+        .to_bytes(),
+    }
+}
+
 /// Build a `SellTokensViaBridgeIx` (flipcash currency → USDF → bridge → USDC).
 #[allow(clippy::too_many_arguments)]
 pub fn build_sell_tokens_via_bridge_ix(

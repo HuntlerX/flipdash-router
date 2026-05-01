@@ -1,14 +1,18 @@
 pub mod buy;
 pub mod buy_via_bridge;
+pub mod buy_via_coinbase;
 pub mod currency_to_currency;
 pub mod sell;
 pub mod sell_via_bridge;
+pub mod sell_via_coinbase;
 
 pub use buy::*;
 pub use buy_via_bridge::*;
+pub use buy_via_coinbase::*;
 pub use currency_to_currency::*;
 pub use sell::*;
 pub use sell_via_bridge::*;
+pub use sell_via_coinbase::*;
 
 use solana_program::program_error::ProgramError;
 use steel::*;

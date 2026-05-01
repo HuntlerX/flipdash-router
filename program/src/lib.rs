@@ -9,6 +9,10 @@
 //! - [`instruction::sell`] — flipcash currency → USDF
 //! - [`instruction::sell_via_bridge`] — flipcash currency → USDF → bridge → USDC
 //! - [`instruction::currency_to_currency`] — flipcash A → USDF → flipcash B
+//! - [`instruction::buy_via_coinbase`] — same as buy_via_bridge but routes
+//!   USDC↔USDF through the Coinbase ocp-server pool (alternate bridge)
+//! - [`instruction::sell_via_coinbase`] — same as sell_via_bridge but
+//!   routes USDF↔USDC through the Coinbase pool
 //!
 //! All CPIs go through helpers in [`cpi`], which re-verify program IDs as a
 //! defense-in-depth check. There are no admin functions, no PDA-owned funds,
@@ -40,6 +44,8 @@ pub fn process_instruction(
         InstructionType::SellTokensIx => process_sell_tokens(accounts, data)?,
         InstructionType::SellTokensViaBridgeIx => process_sell_tokens_via_bridge(accounts, data)?,
         InstructionType::CurrencyToCurrencyIx => process_currency_to_currency(accounts, data)?,
+        InstructionType::BuyTokensViaCoinbaseIx => process_buy_tokens_via_coinbase(accounts, data)?,
+        InstructionType::SellTokensViaCoinbaseIx => process_sell_tokens_via_coinbase(accounts, data)?,
     }
 
     Ok(())

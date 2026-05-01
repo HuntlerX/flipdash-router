@@ -16,6 +16,14 @@ pub enum InstructionType {
     /// (curve buy). Single 0.85% fee taken in USDF on the intermediate gross
     /// (vs the 1.7% the user would pay doing the two trades manually).
     CurrencyToCurrencyIx = 5,
+    /// Same shape as `BuyTokensViaBridgeIx`, but routes the USDC→USDF leg
+    /// through the Coinbase ocp-server stable swapper instead of the
+    /// usdf-swap-program. Off-chain selection (indexer picks the bridge
+    /// with sufficient USDC liquidity) lets us fall back transparently.
+    BuyTokensViaCoinbaseIx = 6,
+    /// Same shape as `SellTokensViaBridgeIx`, but routes the USDF→USDC leg
+    /// through the Coinbase ocp-server stable swapper.
+    SellTokensViaCoinbaseIx = 7,
 }
 
 instruction!(InstructionType, BuyTokensIx);
@@ -23,6 +31,8 @@ instruction!(InstructionType, BuyTokensViaBridgeIx);
 instruction!(InstructionType, SellTokensIx);
 instruction!(InstructionType, SellTokensViaBridgeIx);
 instruction!(InstructionType, CurrencyToCurrencyIx);
+instruction!(InstructionType, BuyTokensViaCoinbaseIx);
+instruction!(InstructionType, SellTokensViaCoinbaseIx);
 
 // All four ixs share the same wire layout: total in_amount + slippage min.
 //
@@ -85,6 +95,22 @@ pub struct CurrencyToCurrencyIx {
     pub min_amount_out: [u8; 8],
 }
 
+// Same wire layout as the bridge variants — the only difference is the
+// program / pool / vaults the router CPIs into for the USDC↔USDF leg.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct BuyTokensViaCoinbaseIx {
+    pub in_amount: [u8; 8],
+    pub min_amount_out: [u8; 8],
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct SellTokensViaCoinbaseIx {
+    pub in_amount: [u8; 8],
+    pub min_amount_out: [u8; 8],
+}
+
 macro_rules! impl_swap_args {
     ($t:ty) => {
         impl $t {
@@ -109,3 +135,5 @@ impl_swap_args!(BuyTokensViaBridgeIx);
 impl_swap_args!(SellTokensIx);
 impl_swap_args!(SellTokensViaBridgeIx);
 impl_swap_args!(CurrencyToCurrencyIx);
+impl_swap_args!(BuyTokensViaCoinbaseIx);
+impl_swap_args!(SellTokensViaCoinbaseIx);

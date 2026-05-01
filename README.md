@@ -13,8 +13,12 @@ The router is intentionally minimal: no admin functions, no PDA-owned funds, no 
 | 3  | `SellTokensIx`             | flipcash currency → USDF                            |
 | 4  | `SellTokensViaBridgeIx`    | flipcash currency → USDF → bridge → USDC            |
 | 5  | `CurrencyToCurrencyIx`     | flipcash A → USDF → flipcash B (single 0.85% fee)   |
+| 6  | `BuyTokensViaCoinbaseIx`   | USDC → Coinbase pool → USDF → flipcash currency     |
+| 7  | `SellTokensViaCoinbaseIx`  | flipcash currency → USDF → Coinbase pool → USDC     |
 
 Each instruction takes the same 16-byte argument: `(in_amount: u64, min_amount_out: u64)`, both little-endian.
+
+Disc=6 / disc=7 are alternates to disc=2 / disc=4 — same shape, but route the USDC↔USDF leg through the Coinbase ocp-server stable swap pool (`pqgqKa…`) instead of the `usdf-swap-program`. Off-chain (indexer) selects whichever bridge has sufficient USDC liquidity at quote time.
 
 ## Safety properties
 
@@ -40,7 +44,7 @@ The on-chain bytecode for the mainnet program is reproducible from this reposito
 ```bash
 git clone https://github.com/HuntlerX/flipdash-router
 cd flipdash-router
-git checkout v0.2.0     # tag of the deployed build
+git checkout v0.3.0     # tag of the deployed build
 make build-mainnet
 
 solana program dump -u mainnet-beta \

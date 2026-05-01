@@ -3,7 +3,7 @@ members = ["api", "program"]
 resolver = "2"
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 homepage = "https://flipdash.cash"
@@ -13,7 +13,7 @@ readme = "./README.md"
 keywords = ["solana", "flipcash", "router"]
 
 [workspace.dependencies]
-flipdash-router-api = { version = "0.2.0", path = "./api" }
+flipdash-router-api = { version = "0.3.0", path = "./api" }
 
 bytemuck = "1.14.3"
 bytemuck_derive = ">=1.8.1, <1.9.0"

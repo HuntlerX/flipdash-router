@@ -27,6 +27,17 @@ pub enum FlipdashRouterError {
     /// bridge pinned in consts. Refused so a non-1:1 pool can't be supplied
     /// by the off-chain caller.
     InvalidBridgePool = 7,
+    /// Coinbase pool accounts did not match the pinned constants
+    /// (pool / vault / vault-token / fee-recipient / fee-recipient-ATA /
+    /// whitelist). Same defense-in-depth as `InvalidBridgePool`.
+    InvalidCoinbasePool = 8,
+    /// The Coinbase CPI (a closed-source upgradable program with
+    /// signer + writable on the user's source ATA) debited *more* than
+    /// the user authorized via `in_amount` — or didn't debit exactly
+    /// that amount. Defense against a malicious pool-program upgrade
+    /// that could otherwise drain extra source tokens while crediting
+    /// just enough on the destination side to pass the slippage check.
+    SourceOverDebit = 9,
 }
 
 error!(FlipdashRouterError);

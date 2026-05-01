@@ -175,6 +175,89 @@ pub fn invoke_bridge_swap<'info>(
     )
 }
 
+/// CPI helper for the Coinbase ocp-server stable swapper. Same role as
+/// `invoke_bridge_swap` but for `pqgqKa…` (Anchor program; 16 accounts;
+/// 24-byte data: `[8-byte disc][u64 amount_in][u64 min_amount_out]`).
+///
+/// The caller is responsible for pinning the pool, vaults, fee_recipient,
+/// fee-recipient-ATA, and whitelist before calling — this helper only
+/// re-verifies the program ID as defense-in-depth.
+#[allow(clippy::too_many_arguments)]
+pub fn invoke_coinbase_swap<'info>(
+    coinbase_program: &AccountInfo<'info>,
+    pool: &AccountInfo<'info>,
+    in_vault: &AccountInfo<'info>,
+    out_vault: &AccountInfo<'info>,
+    in_vault_token_account: &AccountInfo<'info>,
+    out_vault_token_account: &AccountInfo<'info>,
+    user_from_token_account: &AccountInfo<'info>,
+    user_to_token_account: &AccountInfo<'info>,
+    fee_recipient_token_account: &AccountInfo<'info>,
+    fee_recipient: &AccountInfo<'info>,
+    from_mint: &AccountInfo<'info>,
+    to_mint: &AccountInfo<'info>,
+    user: &AccountInfo<'info>,
+    whitelist: &AccountInfo<'info>,
+    token_program: &AccountInfo<'info>,
+    ata_program: &AccountInfo<'info>,
+    system_program: &AccountInfo<'info>,
+    amount_in: u64,
+    min_amount_out: u64,
+) -> ProgramResult {
+    if *coinbase_program.key != COINBASE_PROGRAM {
+        return Err(FlipdashRouterError::InvalidProgram.into());
+    }
+
+    let mut data = Vec::with_capacity(8 + 8 + 8);
+    data.extend_from_slice(&COINBASE_IX_SWAP_DISC);
+    data.extend_from_slice(&amount_in.to_le_bytes());
+    data.extend_from_slice(&min_amount_out.to_le_bytes());
+
+    let ix = Instruction {
+        program_id: COINBASE_PROGRAM,
+        accounts: vec![
+            AccountMeta::new_readonly(*pool.key, false),
+            AccountMeta::new_readonly(*in_vault.key, false),
+            AccountMeta::new_readonly(*out_vault.key, false),
+            AccountMeta::new(*in_vault_token_account.key, false),
+            AccountMeta::new(*out_vault_token_account.key, false),
+            AccountMeta::new(*user_from_token_account.key, false),
+            AccountMeta::new(*user_to_token_account.key, false),
+            AccountMeta::new(*fee_recipient_token_account.key, false),
+            AccountMeta::new_readonly(*fee_recipient.key, false),
+            AccountMeta::new_readonly(*from_mint.key, false),
+            AccountMeta::new_readonly(*to_mint.key, false),
+            AccountMeta::new(*user.key, true),
+            AccountMeta::new_readonly(*whitelist.key, false),
+            AccountMeta::new_readonly(*token_program.key, false),
+            AccountMeta::new_readonly(*ata_program.key, false),
+            AccountMeta::new_readonly(*system_program.key, false),
+        ],
+        data,
+    };
+    invoke(
+        &ix,
+        &[
+            pool.clone(),
+            in_vault.clone(),
+            out_vault.clone(),
+            in_vault_token_account.clone(),
+            out_vault_token_account.clone(),
+            user_from_token_account.clone(),
+            user_to_token_account.clone(),
+            fee_recipient_token_account.clone(),
+            fee_recipient.clone(),
+            from_mint.clone(),
+            to_mint.clone(),
+            user.clone(),
+            whitelist.clone(),
+            token_program.clone(),
+            ata_program.clone(),
+            system_program.clone(),
+        ],
+    )
+}
+
 /// Plain SPL Token `Transfer` (legacy non-checked variant). The router uses
 /// this only for taking the FlipDash fee from the user's USDF ATA into the
 /// FEE_OWNER's USDF ATA. The mint is fixed (USDF) and the destination is
